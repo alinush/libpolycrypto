@@ -11,9 +11,9 @@ import numpy as np
 setTitle=False
 
 if len(sys.argv) < 5:
-    print "Usage:", sys.argv[0], "<output-png-file> <min-N> <max-N> <is-detailed> <csv-file> [<csv-file>] ..."
+    print "Usage:", sys.argv[0], "<output-png-file> <min-N> <max-N> <is-paper-plot> <csv-file> [<csv-file>] ..."
     print
-    print "<is-detailed> should be 1 if you want lines for 'multiexp, lagr, lagr+multiexp' and 0 if you just want 'lagr+multiexp'"
+    print "<is-paper-plot> should be 1 if you want lines for 'multiexp, lagr, lagr+multiexp' and 0 if you just want 'lagr+multiexp'"
     sys.exit(0)
 
 del sys.argv[0]
@@ -27,9 +27,9 @@ del sys.argv[0]
 maxN = int(sys.argv[0])
 del sys.argv[0]
 
-is_detailed = (sys.argv[0].strip() == '1')
+is_paper_plot = (sys.argv[0].strip() == '1')
 del sys.argv[0]
-print "Is detailed:", is_detailed
+print "Is paper plot:", is_paper_plot
 
 data_files = [f for f in sys.argv]
 if len(data_files) == 0:
@@ -58,8 +58,12 @@ print "max N:", maxN
 csv_data.interpolation_method.replace('multi-eval-1-to-n', 'Old Fast Lagrange', inplace=True)
 csv_data.interpolation_method.replace('naive-lagr-1-to-n', 'Old Naive Lagrange', inplace=True)
 
-csv_data.interpolation_method.replace('fft-eval', 'Fast Lagrange', inplace=True)
-csv_data.interpolation_method.replace('naive-lagr-wnk', 'Naive Lagrange', inplace=True)
+if is_paper_plot:
+    csv_data.interpolation_method.replace('fft-eval', 'Fast Lagrange', inplace=True)
+    csv_data.interpolation_method.replace('naive-lagr-wnk', 'Naive Lagrange', inplace=True)
+else:
+    csv_data.interpolation_method.replace('fft-eval', 'Fast threshold BLS aggregation', inplace=True)
+    csv_data.interpolation_method.replace('naive-lagr-wnk', 'Naive threshold BLS aggregation', inplace=True)
 
 #csv_data = csv_data[csv_data.dkg != 'Feldman']
 csv_data = csv_data[csv_data.n >= minN]
@@ -88,23 +92,32 @@ plt.rc('ytick',  labelsize= BIG_SIZE)
 plt.rc('legend', fontsize=  BIG_SIZE)
 #plt.rc('figure', titlesize=BIGGER_SIZE)     # fontsize of the figure title
 
-#plt.rcParams['axes.prop_cycle'] = cycler(color='bgrcmyk')
-plt.rcParams['axes.prop_cycle'] = cycler(color=[
-    # for naive Lagrange lines
-    '#1f77b4', # blue
-    #'#9467bd', # purple/magenta/whatever,
-    '#1f77b4', # blue
-    
-    # for fast Lagrange lines
-    '#ff7f0e', # orange
-    '#ff7f0e', # orange
-    #'#d62728', # red
+if is_paper_plot:
+    #plt.rcParams['axes.prop_cycle'] = cycler(color='bgrcmyk')
+    plt.rcParams['axes.prop_cycle'] = cycler(color=[
+        # for naive Lagrange lines
+        '#1f77b4', # blue
+        #'#9467bd', # purple/magenta/whatever,
+        '#1f77b4', # blue
+        
+        # for fast Lagrange lines
+        '#ff7f0e', # orange
+        '#ff7f0e', # orange
+        #'#d62728', # red
 
-    # for multiexp line
-    #'#bcbd22', # yellow
-    #'#d62728', # red
-    '#2ca02c', # green
-    ])
+        # for multiexp line
+        #'#bcbd22', # yellow
+        #'#d62728', # red
+        '#2ca02c', # green
+        ])
+else:
+    print "Redoing colors"
+    plt.rcParams['axes.prop_cycle'] = cycler(color=[
+        # for naive Lagrange lines
+        '#1f77b4', # blue
+        # for fast Lagrange lines
+        '#ff7f0e', # orange
+        ])
 
 def plotNumbers(data):
     #logBase = 10
@@ -146,7 +159,7 @@ def plotNumbers(data):
     ax1.yaxis.set_minor_locator(locmin)
     ax1.yaxis.set_minor_formatter(plticker.NullFormatter())
 
-    if is_detailed:
+    if is_paper_plot:
         marker = None
 
         methods = data.interpolation_method.unique()
@@ -170,16 +183,16 @@ def plotNumbers(data):
         col1 = filtered.total_usec.values
 
         assert len(x) == len(col1)
-        if is_detailed:
+        if is_paper_plot:
             plt1, = ax1.plot(x, filtered.lagr_usec.values, linestyle="--", marker="x") #, linewidth=1.7, markersize=10) #, markeredgewidth=1.5)
             plots.append(plt1)
             names.append(lagrType)
 
         plt2, = ax1.plot(x, filtered.total_usec.values, linestyle="-", marker=marker) #, markersize=10, linewidth=2.0)
         plots.append(plt2)
-        names.append(lagrType + " + Multiexp")
+        names.append(lagrType + (" + Multiexp" if is_paper_plot else ""))
 
-    if is_detailed:
+    if is_paper_plot:
         plt3, = ax1.plot(x, filtered.multiexp_usec.values, linestyle="-.")#, marker=".")
         plots.append(plt3)
         names.append("Multiexp");
