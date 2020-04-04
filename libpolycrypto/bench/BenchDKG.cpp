@@ -265,7 +265,7 @@ void benchmarkDkg(
     fout << avgTimeOrNan(trBC, false) << ",";
     // NOTE: Worst-case reconstruction is triggered after best-case fails, so need to account for the
     // wasted work.
-    fout << sumAvgTimeOrNan({trBC, trWC}, true) << ",";
+    fout << sumAvgTimeOrNan({trBC, trWC}, false) << ",";
 
     fout << avgTimeOrNan(td, true) << ",";
     fout << avgTimeOrNan(tvBC, true) << ",";
