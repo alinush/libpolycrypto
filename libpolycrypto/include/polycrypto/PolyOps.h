@@ -91,7 +91,7 @@ std::ostream& operator<<(std::ostream& out, const XncPoly& rhs);
 /**
  * Does an FFT: i.e., evaluates and returns p(\omega^i) for all i = 0, ..., N-1
  * 
- * @param   N   specifies the primitive Nth root of unity \omega
+ * @param   N   specifies the primitive Nth root of unity \omega (must be 2^k)
  */
 template<class FieldT>
 void poly_fft(const std::vector<FieldT>& p, size_t N, std::vector<FieldT>& vals) {

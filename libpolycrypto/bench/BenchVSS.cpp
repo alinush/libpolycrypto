@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
         cout << "   <public-params-file>    the file with q-SDH public params for Kate-based VSS" << endl;
         cout << "   <min-f>                 the min threshold # f of malicious participants" << endl;
         cout << "   <max-f>                 the max threshold # f of malicious participants" << endl;
-        cout << "   <vss-types>             comma-separated list of VSSs you want to benchmark: feld, kate, kate-sim, amt or amt-sim" << endl;
+        cout << "   <vss-types>             comma-separated list of VSSs you want to benchmark: feld, kate, kate-sim, amt, amt-sim, fk, fk-sim" << endl;
         cout << "   <num-deal-iters>        the # of times to measure the dealing sub-phase" << endl;
         cout << "   <num-ver-iters>         the # of times to measure the verification sub-phase" << endl;
         cout << "   <num-reconstr-iters>    the # of times to measure the reconstruction phase" << endl;
@@ -268,6 +268,8 @@ int main(int argc, char *argv[]) {
     std::unique_ptr<AccumulatorTree> accs;
     std::unique_ptr<AuthAccumulatorTree> authAccs;
     std::unique_ptr<Dkg::KatePublicParameters> kpp;
+    // TODO: i don't get why Kate would need the Authenticated Accumulator Tree
+    // A: it's because params.getMonomialCommitment() relies on the leaves of the tree being precomputedd. it doesn't need the rest of the tree.
     if(needsKatePublicParams(vsss)) {
         size_t maxPolyDegree = f;   // recall that poly of degree f has f+1 coefficients, but q = f
         kpp.reset(new Dkg::KatePublicParameters(ppFile, maxPolyDegree));

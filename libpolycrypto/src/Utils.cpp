@@ -17,13 +17,7 @@
 
 vector<size_t> random_subset(size_t k, size_t n) {
     vector<size_t> x(n);
-    for (size_t i = 0; i < x.size(); i++) {
-        x[i] = i;
-    }
-
-    random_shuffle(x.begin(), x.end());
-
-    x.resize(k);
+    Utils::randomSubset(x, static_cast<int>(n), static_cast<int>(k));
     return x;
 }
 

@@ -6,6 +6,17 @@ sourcedir=$(cd $scriptdir/../..; pwd -P)
 
 . $scriptdir/shlibs/os.sh
 
+CMAKE_CXX_FLAGS=
+if [ "$OS" = "OSX" -a "$OS_FLAVOR" = "Catalina" ]; then
+    echo "Setting proper env. vars for compiling against OpenSSL in OS X Catalina"
+    export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+
+    # NOTE: None of these seem to help cmake find OpenSSL
+    #export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+    #export CXXFLAGS="-I/usr/local/opt/openssl@1.1/include"
+    #CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS -I/usr/local/opt/openssl@1.1/include"
+fi
+
 CLEAN_BUILD=0
 if [ "$1" == "debug" ]; then
     echo "Debug build..."
@@ -62,6 +73,7 @@ cd $sourcedir/depends
 
 # NOTE TO SELF: After one day of trying to get CMake to add these using ExternalProject_Add (or add_subdirectory), I give up.
 
+echo "Installing ate-pairing..."
 (
     cd ate-pairing/
     if [ $CLEAN_BUILD -eq 1 ]; then
@@ -69,7 +81,7 @@ cd $sourcedir/depends
         echo
         make clean
     fi
-    make -C src \
+    make -j $NUM_CPUS -C src \
         SUPPORT_SNARK=1 \
         $ATE_PAIRING_FLAGS
 
@@ -89,6 +101,7 @@ cd $sourcedir/depends
     #sudo cp lib/zm.so "$LIB_DIR/libzm.so"
 )
 
+echo "Installing libff..."
 (
     cd libff/
     if [ $CLEAN_BUILD -eq 1 ]; then
@@ -105,17 +118,18 @@ cd $sourcedir/depends
         -DIS_LIBFF_PARENT=OFF \
         -DBINARY_OUTPUT=$BINARY_OUTPUT \
         -DNO_PT_COMPRESSION=$NO_PT_COMPRESSION \
-        -DCMAKE_CXX_FLAGS="-Wno-unused-parameter -Wno-unused-value -Wno-unused-variable -I$sourcedir" \
+        -DCMAKE_CXX_FLAGS="-Wno-unused-parameter -Wno-unused-value -Wno-unused-variable -I$sourcedir $CMAKE_CXX_FLAGS" \
         -DUSE_ASM=ON \
         -DPERFORMANCE=OFF \
         -DMULTICORE=$MULTICORE \
         -DCURVE="BN128" \
         -DWITH_PROCPS=OFF ..
 
-    make
+    make -j $NUM_CPUS
     sudo make install
 )
 
+echo "Installing libfqfft..."
 (
     # NOTE: Headers-only library
     cd libfqfft/

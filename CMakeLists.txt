@@ -48,6 +48,10 @@ endif(CCACHE_FOUND)
 #find_package(Boost 1.65 COMPONENTS program_options REQUIRED)
 #include_directories(${Boost_INCLUDE_DIR})
 
+# OS X Catalina fix
+include_directories(SYSTEM "/usr/local/include")
+link_directories("/usr/local/lib")
+
 set(polycrypto_packages
     xassert
     xutils
@@ -72,7 +76,7 @@ endforeach()
 #   TODO: change to set_target_properties?
 #   https://crascit.com/2015/03/28/enabling-cxx11-in-cmake/
 #
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -108,9 +112,11 @@ string(APPEND CXX_FLAGS " -Wextra")
 string(APPEND CXX_FLAGS 
     " -fno-strict-overflow")
 string(APPEND CXX_FLAGS_DEBUG 
-    " -D_FORTIFY_SOURCE=2")
-    #" -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG")
-# TODO: add -D_GLIBCXX_DEBUG if you want bounds checking for std::vector::operator[] but it seems to cause a segfault at the end of execution
+    " -O1")
+# "It turns out that some gcc builds (depends on the distro) set _FORTIFY_SOURCE internally, so you need to undefine it first. So if you used CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2", it might go better."
+# https://github.com/neovim/neovim/issues/2557
+string(APPEND CXX_FLAGS_DEBUG 
+    " -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
 if("${USE_MULTITHREADING}")
   add_definitions(-DUSE_MULTITHREADING)
@@ -132,7 +138,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     string(APPEND CMAKE_CXX_FLAGS 
         " -ferror-limit=3")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG
-        " -fstack-protector-all")
+        " -fstack-protector-all -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls")
+    # TODO: doesn't seem to work on MacOS, getting strange linking errors
+    #string(APPEND CMAKE_CXX_FLAGS_DEBUG 
+    #    " -D_LIBCPP_DEBUG=0")
+    #string(APPEND CMAKE_CXX_FLAGS_DEBUG 
+    #    " -D_LIBCPP_DEBUG=1")
 
 # using GCC
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -141,6 +152,10 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         " -fmax-errors=3")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG 
         " -fstack-protector-all")
+    # NOTE: define _GLIBCXX_DEBUG if you want bounds checking for std::vector::operator[] (but it seems to cause a segfault at the end of execution)
+    # only works for libstdc++ from the GNU compiler, I think
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG 
+        " -D_GLIBCXX_DEBUG")
 
 # TODO: using Intel C++
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")

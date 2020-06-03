@@ -7,20 +7,24 @@ plot_cmd=$scriptdir/../../scripts/linux/plot-vss-times.py
 
 rm -f $scriptdir/*.png
 
-#$plot_cmd \
-#    "-evss-only" 2  0 \
-#    $scriptdir/kate.csv
+minN=2
+maxN=0
+hasLogscale=1
 
 (
 cd $scriptdir;
 $plot_cmd \
-    "" 2  0 \
+    "" $minN $maxN $hasLogscale \
     kate.csv \
     amt.csv \
+    fk.csv \
 )
 
-#$plot_cmd \
-#    "-with-feld" 31 0 \
-#    $scriptdir/kate.csv \
-#    $scriptdir/amt.csv \
-#    $scriptdir/feld.csv \
+(
+cd $scriptdir;
+$plot_cmd \
+    "small-scale" 2 1024 $hasLogscale \
+    kate.csv \
+    amt.csv \
+    fk.csv \
+)

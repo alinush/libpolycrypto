@@ -29,26 +29,28 @@ int main(int argc, char *argv[]) {
     libpolycrypto::initialize(nullptr, 0);
 
     if(argc < 5) {
-        cout << "Usage: " << argv[0] << "<t> <n> <r>" << endl;
+        cout << "Usage: " << argv[0] << "<deg> <n> <r>" << endl;
         cout << endl;
         cout << "OPTIONS: " << endl;
-        cout << "   <pp-file>   the Kate public parameters file" << endl;
-        cout << "   <t>    the degree of the evaluated polynomial + 1" << endl;
-        cout << "   <n>    the # of points to evaluate at (i.e., # of AMT leaves)" << endl;  
-        cout << "   <r>    the # of times to repeat the AMT auth + verif" << endl;
+        cout << "   <pp-file>  the Kate public parameters file" << endl;
+        cout << "   <deg>      the degree of the evaluated polynomial" << endl;
+        cout << "   <n>        the # of points to evaluate at (i.e., # of AMT leaves)" << endl;  
+        cout << "   <r>        the # of times to repeat the AMT auth + verif" << endl;
         cout << endl;
 
         return 1;
     }
     
     std::string ppFile = argv[1];
-    size_t t = static_cast<size_t>(std::stoi(argv[2]));
+    size_t deg = static_cast<size_t>(std::stoi(argv[2]));
     size_t n = static_cast<size_t>(std::stoi(argv[3]));
     size_t r = static_cast<size_t>(std::stoi(argv[4]));
 
     std::unique_ptr<Dkg::KatePublicParameters> kpp(
-        new Dkg::KatePublicParameters(ppFile, t-1));
-    loginfo << "Degree t = " << t - 1 << " poly, evaluated at n = " << n << " points, iters = " << r << endl;
+        new Dkg::KatePublicParameters(ppFile, deg));
+
+    loginfo << endl;
+    loginfo << "Degree " << deg << " poly, evaluated at n = " << n << " points, iters = " << r << endl;
 
     AveragingTimer at("Accum tree");
     at.startLap();
@@ -61,21 +63,21 @@ int main(int argc, char *argv[]) {
     //std::cout << "Accumulator tree for n = " << n << endl;
     //std::cout << accs.toString() << endl;
 
-    std::vector<Fr> f = random_field_elems(t);
+    std::vector<Fr> f = random_field_elems(deg + 1);
 
     // Step 1: Fast multipoint eval
-    AveragingTimer c1("Roots-of-unity eval ");
-    c1.startLap();
+    AveragingTimer et("Roots-of-unity eval ");
+    et.startLap();
     RootsOfUnityEvaluation eval(f, accs);
     std::vector<Fr> evals = eval.getEvaluations();
-    mus = c1.endLap();
+    mus = et.endLap();
 
     logperf << " - Roots of unity eval: " << Utils::humanizeMicroseconds(mus, 2) << endl;
 
     // Step 2: Authenticate AccumulatorTree
     AveragingTimer aat("Auth accum tree");
     aat.startLap();
-    AuthAccumulatorTree authAccs(accs, *kpp, t);
+    AuthAccumulatorTree authAccs(accs, *kpp, deg+1);
     mus = aat.endLap();
     
     logperf << " - AuthAccumulatorTree: " << Utils::humanizeMicroseconds(mus, 2) << endl;
@@ -101,8 +103,8 @@ int main(int argc, char *argv[]) {
 
     logperf << endl;
     logperf << at << endl;
-    logperf << c1 << endl;
     logperf << aat << endl;
+    logperf << et << endl;
     logperf << ar << endl;
     logperf << ars << endl;
     logperf << endl;

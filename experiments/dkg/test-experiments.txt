@@ -1,0 +1,8 @@
+# feel free to comment
+2     8     3 3 3 3 3 feld
+2     8     3 3 3 3 3 kate
+2     8     3 3 3 3 3 kate-sim
+2     8     3 3 3 3 3 fk
+2     8     3 3 3 3 3 fk-sim
+2     8     3 3 3 3 3 amt
+2     8     3 3 3 3 3 amt-sim

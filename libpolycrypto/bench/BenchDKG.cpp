@@ -45,7 +45,7 @@ void benchmarkDkg(
 
     std::unique_ptr<FeldmanPublicParameters> fpp;
 
-    if(needsFeldmanPublicParams({ dkgType })) 
+    if(needsFeldmanPublicParams({ dkgType }))
         fpp.reset(new FeldmanPublicParameters(params));
     if(needsKatePublicParams({ dkgType }))
         params.setAuthAccumulators(authAccs);
@@ -62,9 +62,9 @@ void benchmarkDkg(
     for(size_t i = 0; i < numReal; i++) {
         // WARNING: We set the active players to be those with larger IDs, because otherwise Feldman DKG share verification
         // is much faster for ID w_N^0 = 1, since they have to compute \sum_{i=0}^{t-1} c_i^{1^i}, so no exponentiations will happen
-        realPlayers.push_back(
-            createPlayer(
-                dkgType, params, lastId, kpp, fpp.get(), isSimulated, true));
+        auto p = createPlayer(
+                dkgType, params, lastId, kpp, fpp.get(), isSimulated, true);
+        realPlayers.push_back(p);
         lastId--;
     }
     
@@ -308,7 +308,7 @@ int main(int argc, char *argv[]) {
         cout << "   <public-params-file>    the file with q-SDH public params for Kate-based DKG" << endl;
         cout << "   <min-f>                 the min threshold # f of malicious participants" << endl;
         cout << "   <max-f>                 the max threshold # f of malicious participants" << endl;
-        cout << "   <dkgs>                  comma-separated list of DKGs you want to benchmark: feld, kate, or amt" << endl;
+        cout << "   <dkgs>                  comma-separated list of DKGs you want to benchmark: feld, kate, kate-sim, amt, amt-sim, fk, fk-sim" << endl;
         cout << "   <num-deal>              <num-deal> out of total n players deal (when > n, just have players re-deal)" << endl;
         cout << "   <num-verify-bc>         # of iters for best-case verification" << endl;
         cout << "   <num-verify-wc>         # of iters for worst-case verification" << endl;
@@ -369,6 +369,8 @@ int main(int argc, char *argv[]) {
     std::unique_ptr<AccumulatorTree> accs;
     std::unique_ptr<AuthAccumulatorTree> authAccs;
     std::unique_ptr<KatePublicParameters> kpp;
+    // TODO: i don't get why Kate would need the Authenticated Accumulator Tree
+    // A: it's because params.getMonomialCommitment() relies on the leaves of the tree being precomputed. it doesn't need the rest of the tree.
     if(needsKatePublicParams(dkgs)) {
         size_t maxPolyDegree = f;   // recall that poly of degree f has f+1 coefficients, but q = f
         kpp.reset(new KatePublicParameters(ppFile, maxPolyDegree));

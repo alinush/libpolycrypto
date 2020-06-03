@@ -3,8 +3,10 @@
 #include <memory>
 
 #include <polycrypto/PolyCrypto.h>
+#include <polycrypto/KZG.h>
 #include <polycrypto/DkgCommon.h>
 #include <polycrypto/AbstractKatePlayer.h>
+#include <polycrypto/FFT.h>
 #include <polycrypto/KatePublicParameters.h>
 
 #include <xutils/Log.h>
@@ -19,6 +21,7 @@ using libpolycrypto::G2;
 using libpolycrypto::GT;
 using libpolycrypto::ReducedPairing;
 using libpolycrypto::multiExp;
+using libpolycrypto::FFT;
 
 /**
  * Let n denote the number of players in the DKG/VSS.
@@ -79,23 +82,19 @@ public:
      * Verifies that p_j(w_N^id) = val, where p_j is committed in polyComm.
      */
     bool verifyAtId(const G1& polyComm, const G1& proof, const Fr& val) const {
-        return verifyKateProof(polyComm, proof, val * G1::one(), g2toId);
+        return KZG::verifyProof(polyComm, proof, val * G1::one(), g2toId);
     }
 
     /**
      * Verifies that valComm = g^p_j(0), where p_j is committed in polyComm.
      */
     bool verifyAtZero(const G1& polyComm, const G1& proof, const G1& valComm) const {
-        return verifyKateProof(polyComm, proof, valComm, kpp.getG2toS()); 
+        return KZG::verifyProof(polyComm, proof, valComm, kpp.getG2toS()); 
     }
 
     /**
      * Verifies that valComm = g^p_j(z), where p_j is committed in polyComm and z is committed in acc = g^{s - z}.
      */
-    bool verifyKateProof(const G1& polyComm, const G1& proof, const G1& valComm, const G2& acc) const {
-        return ReducedPairing(polyComm - valComm, G2::one()) ==
-               ReducedPairing(proof, acc);
-    }
 };
 
 /**
@@ -130,7 +129,7 @@ public:
     virtual void computeRealProofs() {
         // TODO: all proofs can be multithreaded, but there's no point for now, unless we can multithread the verification too, which we cannot due to libff parallel pairing bug
         // compute proof for f(0)
-        allProofs->setZeroProof(std::get<0>(kateProve(Fr::zero())));
+        allProofs->setZeroProof(std::get<0>(KZG::naiveProve(kpp, f_id, Fr::zero())));
 
         // compute f_id(w_N^j) and its proof for all players j
         shares.resize(params.n);
@@ -138,7 +137,7 @@ public:
             // NOTE: Although this player doesn't verify his own f_id(id) proof, we still need 
             // to compute this proof so we can aggregate it into a proof for the final f(id).
             G1 pi;
-            std::tie(pi, shares[i]) = kateProve(params.omegas[i]);
+            std::tie(pi, shares[i]) = KZG::naiveProve(kpp, f_id, params.omegas[i]);
             allProofs->setPlayerProof(i, pi);
         }
     }
@@ -216,6 +215,38 @@ public:
         return true;
     }
 
+};
+
+/**
+ * Implements a player for Kate et al's DKG with constant-sized proofs computed in O(n\log{n}) time (via Feist-Khovratovich) rather than O(nt).
+ */
+class FkPlayer : public KatePlayer {
+public:
+    FkPlayer(const DkgParams& params, const KatePublicParameters& kpp, size_t id, bool isSimulated, bool isDkgPlayer)
+        : KatePlayer(params, kpp, id, isSimulated, isDkgPlayer)
+    {}
+
+public:
+    virtual void evaluate() {
+        libpolycrypto::poly_fft(f_id, params.N, shares);
+        shares.resize(params.n);
+    }
+
+    virtual void computeRealProofs() {
+        // compute proof for f(0)
+        allProofs->setZeroProof(std::get<0>(KZG::naiveProve(kpp, f_id, Fr::zero())));
+
+        // WARNING: breaking encapsulation a little here for some performance?
+        // Supposed to call allProofs->setPlayerProof(i, pi) instead
+        auto &h = allProofs->playerProof;
+        h = kpp.computeAllHis(f_id);
+        h.resize(params.N, G1::zero());
+
+        // NOTE: Although this player doesn't verify his own f_id(id) proof, we still need 
+        // to compute this proof so we can aggregate it into a proof for the final f(id).
+        FFT<G1, Fr>(h);
+        h.resize(params.n);
+    }
 };
 
 }

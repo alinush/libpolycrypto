@@ -30,13 +30,15 @@ int main(int argc, char *argv[]) {
 
     size_t n = static_cast<size_t>(std::stoi(argv[1]));
 
-    loginfo << "Picking " << n << " random group elements..." << endl;
+    loginfo << "Picking " << n << " random G1    elements..." << endl;
     auto a = random_group_elems<G1>(n);
+    loginfo << "Picking " << n << " random G2    elements..." << endl;
+    auto b = random_group_elems<G2>(n);
     loginfo << "Picking " << n << " random field elements..." << endl;
     auto e = random_field_elems(n);
 
-    loginfo << "Doing " << n << " exponentiations..." << endl;
-    AveragingTimer tn("Exp");
+    loginfo << "Doing " << n << " G1 exponentiations..." << endl;
+    AveragingTimer tn("Exp G1");
     G1 r;
     for(size_t i = 0; i < n; i++) {
         tn.startLap();
@@ -45,8 +47,20 @@ int main(int argc, char *argv[]) {
     }
 
     logperf << tn << endl;
-    
     logperf << "Total time: " << Utils::humanizeMicroseconds(tn.totalLapTime()) << endl;
+    
+    loginfo << "Doing " << n << " G2 exponentiations..." << endl;
+    AveragingTimer tm("Exp G2");
+    G2 s;
+    for(size_t i = 0; i < n; i++) {
+        tm.startLap();
+        s = e[i]*b[i];
+        tm.endLap();
+    }
+
+    logperf << tm << endl;
+    
+    logperf << "Total time: " << Utils::humanizeMicroseconds(tm.totalLapTime()) << endl;
 
     return 0;
 }

@@ -28,6 +28,8 @@ else
 
     scriptdir=$(cd $(dirname ${BASH_SOURCE[@]}); pwd -P)
     sourcedir=$(cd $scriptdir/../..; pwd -P)
+
+    . $scriptdir/shlibs/os.sh
     #echo "Source dir: $sourcedir"
 
     branch=`git branch | grep "\*"`
@@ -56,6 +58,12 @@ else
     esac
 
     cmake_args="$cmake_args $extra_cmake_args"
+    
+    # only for OS X Catalina
+    #if [ "$OS" = "OSX" -a "$OS_FLAVOR" = "Catalina" ]; then
+    #    echo "Setting extra env. vars for OS X Catalina..."
+    #    cmake_args="$cmake_args -DCMAKE_CXX_FLAGS=-I/usr/local/include"
+    #fi
 
     #
     # grep-code alias

@@ -1,10 +1,25 @@
 # libpolycrypto 
 
+## WARNING
+
+There seems to be a bug when benchmarking both VSS and DKG at large scales ($t \ge 131072$) with `BenchVSS` and `BenchDKG`.
+Specifically, a proof fails verification during the reconstruction (for VSS) or worst-case reconstruction for (DKG).
+
+ - Cannot reproduce at small scales
+ - It occurs for both AMT and for FK
+ - It also occurred for AMT simulated mode ($t=524288$, $n=2^{20}$)
+ - It does _not_ occur in `TestFk` for example
+ - Tried debugging by enabling lots of compiler checks to ensure there are no out-of-bounds error, but no luck.
+
 ## Build on Linux
 
 Step zero is to clone this repo and `cd` to the right directory:
 
     cd <wherever-you-cloned-libpolycrypto>
+
+If you're running OS X, make sure you have the Xcode **and** the Xcode developer tools installed:
+
+    xcode-select --install
 
 First, install deps using:
 

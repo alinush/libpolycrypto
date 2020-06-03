@@ -1,3 +1,5 @@
+#include <polycrypto/Configuration.h>
+
 #include <polycrypto/PolyOps.h>
 #include <polycrypto/PolyCrypto.h>
 #include <polycrypto/RootsOfUnityEval.h>
@@ -46,7 +48,7 @@ int main(int argc, char *argv[]) {
     size_t maxT = maxN - 1; 
     size_t maxDeg = maxT - 1;
 
-    auto kpp = Dkg::KatePublicParameters::getRandom(maxDeg);
+    std::unique_ptr<Dkg::KatePublicParameters> kpp(new Dkg::KatePublicParameters(maxDeg));
 
     // NOTE: This code shows that AccumulatorTree's are subsets of one another.
     // Just keep in mind that w_{2N}^{2k} = w_N^k.
@@ -58,9 +60,9 @@ int main(int argc, char *argv[]) {
 
     // Testing that a_4 is a subset of a_8!
     AccumulatorTree a4(4);
-    AuthAccumulatorTree aa4(a4, kpp, 5);
+    AuthAccumulatorTree aa4(a4, *kpp, 5);
     AccumulatorTree a8(8);
-    AuthAccumulatorTree aa8(a8, kpp, 9);
+    AuthAccumulatorTree aa8(a8, *kpp, 9);
 
     for(size_t level = 0; level < 3; level++) {
         for(size_t idx = 0; idx < pow2(2 - level); idx++) {
@@ -72,7 +74,7 @@ int main(int argc, char *argv[]) {
 
     // Authenticate AccumulatorTree
     AccumulatorTree maxAccs(maxN);
-    AuthAccumulatorTree authAccs(maxAccs, kpp, maxT);
+    AuthAccumulatorTree authAccs(maxAccs, *kpp, maxT);
     authAccs._assertValid();
 
     //for(size_t i = 0; i < r; i++) {
@@ -91,7 +93,7 @@ int main(int argc, char *argv[]) {
                 // Step 2: Authenticate Multipoint Evaluation
                 //loginfo << "Computing AMT: ";
                 for(bool isSimulated : { true, false }) {
-                    AuthRootsOfUnityEvaluation authEval(eval, kpp, isSimulated);
+                    AuthRootsOfUnityEvaluation authEval(eval, *kpp, isSimulated);
 
                     // Verify all monomial commitments
                     for(size_t i = 0; i < n; i++) {
@@ -99,7 +101,7 @@ int main(int argc, char *argv[]) {
                         //loginfo << "vk[" << i << "]: " << vk << endl;
 
                         testAssertEqual(
-                            kpp.getG2toS() - params.omegas[i] * G2::one(), 
+                            kpp->getG2toS() - params.omegas[i] * G2::one(), 
                             vk);
                     }
                 }

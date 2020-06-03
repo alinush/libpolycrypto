@@ -1,3 +1,5 @@
+#include <polycrypto/Configuration.h>
+
 #include <polycrypto/PolyCrypto.h>
 
 #include <polycrypto/RootsOfUnityEval.h>

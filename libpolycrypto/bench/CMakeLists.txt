@@ -5,6 +5,7 @@ set(polycrypto_bench_sources
     BenchDKG.cpp
     BenchExp.cpp
     BenchFFT.cpp
+    BenchFk.cpp
     BenchVSS.cpp
     BenchMultiexp.cpp
     BenchNizkPok.cpp

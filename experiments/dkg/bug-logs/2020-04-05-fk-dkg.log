@@ -1,0 +1,63 @@
+Running t \in #131072 to 131072 fk-sim DKG with 1 dealing, 1/1 BC/WC verifying, 32/2 BC/WC reconstruction
+libc++abi.dylib: terminating with uncaught exception of type std::invalid_argument: stoi: no conversion
+Running t \in 262144 to 262144 fk-sim DKG with 1 dealing, 1/1 BC/WC verifying, 16/1 BC/WC reconstruction
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 342 | 
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 343 | Benchmarking DKGs:
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 345 |  * fk-sim
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 348 | 
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 351 | Benchmarking thresholds: 
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 357 |  * 262144 out of 524287 DKGs
+2020-04-05 18:01:55 90553 14891628  INFO                 main: 361 | 
+2020-04-05 18:01:55 90553 14891628  INFO KatePublicParameters:  22 | Reading back q-PKE parameters... (verify = 0)
+2020-04-05 18:01:55 90553 14891628  INFO KatePublicParameters:  28 | available q = 1048576, s = 10732145532678709363797014778137366245520050579514058540036152191332821422830
+2020-04-05 18:01:55 90553 14891628  INFO KatePublicParameters:  43 | wanted q = 262143
+2020-04-05 18:01:55 90553 14891628  INFO KatePublicParameters:  57 | 262143 params left to read, looking at /Users/alinush/repos/libpolycrypto/experiments/dkg/../../public-params/1048576/1048576-0 ...
+2020-04-05 18:02:05 90553 14891628  INFO KatePublicParameters:  57 | 131071 params left to read, looking at /Users/alinush/repos/libpolycrypto/experiments/dkg/../../public-params/1048576/1048576-1 ...
+2020-04-05 18:02:15 90553 14891628  INFO                 main: 378 | Computing accumulators...
+2020-04-05 18:02:15 90553 14891628  INFO                 main: 380 | Authenticating accumulators...
+2020-04-05 18:03:50 90553 14891628  PERF                 main: 422 | Multithreading disabled...
+
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  55 | Benchmarking 262144 out of 524287 'fk-sim' DKG ...
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  71 | 1 players are dealing
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  72 | 1 best-case verification iters
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  73 | 1 worst-case verification iters
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  74 | 16 best-case reconstruction iters
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  75 | 1 worst-case reconstruction iters
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  78 | 
+2020-04-05 18:03:50 90553 14891628  INFO         benchmarkDkg:  79 | Dealing players (1 iters): 
+2020-04-05 18:05:11 90553 14891628  INFO         benchmarkDkg:  89 |  - 524286: 1.35 mins
+2020-04-05 18:05:11 90553 14891628  INFO         benchmarkDkg: 129 | Need more than 1 player for verification subphase, creating new simulated player...
+2020-04-05 18:05:11 90553 14891628  PERF         benchmarkDkg: 140 | Simulated deal (extra):
+2020-04-05 18:06:32 90553 14891628  PERF         benchmarkDkg: 144 |  - 524285: 1.35 mins
+2020-04-05 18:06:32 90553 14891628  INFO         benchmarkDkg: 154 | Verifying players, best-case (1 iters): 
+2020-04-05 18:09:07 90553 14891628  INFO         benchmarkDkg: 163 |  - 524286: 2.59 mins
+2020-04-05 18:09:07 90553 14891628  INFO         benchmarkDkg: 167 | Verifying players, worst-case (1 iters): 
+2020-04-05 18:34:02 90553 14891628  INFO         benchmarkDkg: 177 |  - 524286: 24.92 mins
+2020-04-05 18:34:02 90553 14891628  INFO         benchmarkDkg: 186 | Reconstructing, best-case (16 iters): 
+2020-04-05 18:34:07 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.94 secs
+2020-04-05 18:34:11 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.90 secs
+2020-04-05 18:34:15 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.91 secs
+2020-04-05 18:34:19 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.90 secs
+2020-04-05 18:34:23 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.95 secs
+2020-04-05 18:34:27 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.91 secs
+2020-04-05 18:34:31 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.90 secs
+2020-04-05 18:34:36 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.96 secs
+2020-04-05 18:34:40 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.92 secs
+2020-04-05 18:34:44 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.90 secs
+2020-04-05 18:34:48 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.90 secs
+2020-04-05 18:34:52 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.92 secs
+2020-04-05 18:34:56 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.94 secs
+2020-04-05 18:35:01 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.91 secs
+2020-04-05 18:35:05 90553 14891628  INFO         benchmarkDkg: 204 |  - 524286: 3.90 secs
+2020-04-05 18:35:09 90553 14891628  INFO         benchmarkDkg: 204 |  - 524285: 3.95 secs
+2020-04-05 18:35:09 90553 14891628  INFO         benchmarkDkg: 209 | Reconstructing, worst-case (1 iters): 
+2020-04-05 18:38:42 90553 14891628 ERROR verifySharesReconstruction: 205 | KZG proof of player 167513 did not verify during reconstruction
+2020-04-05 18:38:42 90553 14891628  INFO verifySharesReconstruction: 206 |  - proof: 0 5418646224410119846948778363592331042015615386877781620167604727925280377432 1
+2020-04-05 18:38:42 90553 14891628  INFO verifySharesReconstruction: 207 |  - VK:    0 9681896219768446892538036089416754937414555942384629147510072960433857355075 14257373299803825760321149229221654154772125497852774845470977044365954633825 0
+2020-04-05 18:38:42 90553 14891628  INFO verifySharesReconstruction: 209 |  - g2^{s - w_N^167513}: 0 9681896219768446892538036089416754937414555942384629147510072960433857355075 14257373299803825760321149229221654154772125497852774845470977044365954633825 0
+Assertion failed in function 'benchmarkDkg', /Users/alinush/repos/libpolycrypto/libpolycrypto/bench/BenchDKG.cpp:220: 'reconstructor->reconstructionVerify(subset, false)' is NOT true
+Segfaulting so that you can get a coredump and check the backtrace...
+Running t \in #524288 to 524288 fk-sim DKG with 1 dealing, 1/1 BC/WC verifying, 10/1 BC/WC reconstruction
+libc++abi.dylib: terminating with uncaught exception of type std::invalid_argument: stoi: no conversion
+Running t \in #1048576 to 1048576 fk-sim DKG with 1 dealing, 1/1 BC/WC verifying, 10/1 BC/WC reconstruction
+libc++abi.dylib: terminating with uncaught exception of type std::invalid_argument: stoi: no conversion

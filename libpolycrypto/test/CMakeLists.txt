@@ -1,6 +1,8 @@
 set(polycrypto_test_sources
     TestAMT.cpp
     TestDKGandVSS.cpp
+    TestFk.cpp
+    TestGroupFft.cpp
     TestKatePublicParams.cpp
     TestPolyOps.cpp
     TestLagrange.cpp

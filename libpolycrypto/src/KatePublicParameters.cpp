@@ -1,8 +1,15 @@
 #include <polycrypto/Configuration.h>
 
+#include <polycrypto/KatePublicParameters.h>
+#include <polycrypto/FFT.h>
+
 #include <fstream>
 
-#include <polycrypto/KatePublicParameters.h>
+#include <libfqfft/evaluation_domain/domains/basic_radix2_domain.hpp>
+#include <libff/algebra/fields/field_utils.hpp>
+
+using libpolycrypto::FFT;
+using libpolycrypto::invFFT;
 
 namespace Dkg { 
 
@@ -160,7 +167,7 @@ void KatePublicParameters::generate(size_t startIncl, size_t endExcl, const Fr& 
 
     //logdbg << "i \\in [" << startIncl << ", " << endExcl << "), s = " << s << endl;
 
-    // generate q-PKE powers and write to file
+    // generate q-SDH powers and write to file
     Fr si = s ^ startIncl;
     int prevPct = -1;
     size_t c = 0;
@@ -187,6 +194,81 @@ void KatePublicParameters::generate(size_t startIncl, size_t endExcl, const Fr& 
     }
     
     fout.close();
+}
+
+std::vector<G1> KatePublicParameters::computeAllHis(const std::vector<Fr>& f) const {
+    // make sure the degree of f is <= q
+    testAssertLessThanOrEqual(f.size(), q + 1);
+
+    if(f.size() == 0)
+        throw std::invalid_argument("f must not be empty");
+
+    size_t m = f.size() - 1; // the degree of f
+    size_t M = Utils::smallestPowerOfTwoAbove(m);
+
+    /**
+     * Recall that for all i\in[1, m]:
+     *   h_i = \prod_{j = 0}^{m - i} (g^{s^{m-(i+j)})^f_{m-j}
+     *
+     * For i > m:
+     *   h_i = G1::zero()
+     *
+     * Also recall that the upper-triangular m\times m Toeplitz matrix has:
+     *   f_m on the diagonal
+     *   f_{m-1} on the diagonal above it
+     *   ...
+     *   f_1 in the upper right corner
+     *
+     * And the size-m vector we're multiplying it by is:
+     *   [ g^{s^{m-1}, g^{s^{m-2}, \dots, g^s, g ]^T
+     *
+     * The circulant matrix which we'll embed the Toeplitz matrix in has vector representative c:
+     *   [ f_m, \vec{0_{m-1}}, f_m, f_1, f_2, f_3, \dots, f_{m-1} ]^T
+     */
+
+    // Note: We handle non-powers of two by making the Toeplitz matrix size a power of two (and padding the vector we're multiplying it by with zeros).
+
+    std::vector<Fr> c(2*M, Fr::zero());
+    if(m == M) {
+        // if no padding, then f_m lands in top-left corner of Toeplitz matrix
+        c[0] = f[m];
+        c[m] = f[m];
+    }
+
+    size_t i = M+1;
+    size_t len = (m == M) ? m-1 : m;
+    for(size_t j = 1; j <= len; j++)
+        c.at(i++) = f[j];
+
+    std::vector<G1> x(2*M, G1::zero());
+    size_t shift = M - m;
+    for(size_t i = 0; i < m; i++)
+        // x[m-1] = g1si[0]
+        // x[m-2] = g1si[1]
+        // ..
+        // x[1] = g1si[m-2]
+        // x[0] = g1si[m-1]
+        x[shift + (m-1) - i] = g1si[i];
+
+    // FFT on x
+    FFT<G1, Fr>(x);
+    
+    // FFT on c
+    Fr omega = libff::get_root_of_unity<Fr>(2*M);
+    // TODO: libfqfft supports other fft's of different sizes too
+    libfqfft::_basic_serial_radix2_FFT(c, omega);
+
+    // Hadamard (entry-wise) product of the two
+    for(size_t i = 0; i < 2*M; i++) {
+        x[i] = c[i] * x[i];
+    }
+
+    // Inverse FFT of the result
+    invFFT<G1, Fr>(x);
+
+    x.resize(m);
+
+    return x;
 }
 
 }

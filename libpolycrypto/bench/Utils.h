@@ -7,13 +7,25 @@
 
 #include <boost/algorithm/string/predicate.hpp> // for boost::starts_with(str, pattern)
 
-Dkg::AbstractPlayer* createPlayer(const std::string& dkgType, const Dkg::DkgParams& params, size_t id, const KatePublicParameters* kpp, const Dkg::FeldmanPublicParameters* fpp, bool isSimulated, bool isDkgPlayer) {
+Dkg::AbstractPlayer* createPlayer(
+    const std::string& dkgType,
+    const Dkg::DkgParams& params,
+    size_t id,
+    const KatePublicParameters* kpp,
+    const Dkg::FeldmanPublicParameters* fpp,
+    bool isSimulated,
+    bool isDkgPlayer)
+{
     assertInclusiveRange(0, id, params.n - 1);
+
+    logdbg << "Creating DKG player of type '" << dkgType << "', simulated = " << isSimulated << endl;
 
     if(dkgType == "feld") {
         return new Dkg::FeldmanPlayer(params, *fpp, id, isSimulated, isDkgPlayer);
     } else if(boost::starts_with(dkgType, "kate")) {
         return new Dkg::KatePlayer(params, *kpp, id, isSimulated, isDkgPlayer);
+    } else if(boost::starts_with(dkgType, "fk")) {
+        return new Dkg::FkPlayer(params, *kpp, id, isSimulated, isDkgPlayer);
     } else if(boost::starts_with(dkgType, "amt")) {
         return new Dkg::MultipointPlayer(params, *kpp, id, isSimulated, isDkgPlayer);
     } else {
@@ -26,7 +38,7 @@ bool needsKatePublicParams(const std::vector<std::string>& types) {
     bool needsKpp = false;
 
     for(auto& t : types) {
-        if(boost::starts_with(t, "amt") || boost::starts_with(t, "kate")) {
+        if(boost::starts_with(t, "amt") || boost::starts_with(t, "kate") || boost::starts_with(t, "fk")) {
             needsKpp = true;
             break;
         }

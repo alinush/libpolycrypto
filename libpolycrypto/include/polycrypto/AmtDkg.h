@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <polycrypto/PolyCrypto.h>
+#include <polycrypto/KZG.h>
 #include <polycrypto/DkgCommon.h>
 #include <polycrypto/AbstractKatePlayer.h>
 #include <polycrypto/KateDkg.h>
@@ -215,7 +216,7 @@ public:
         // compute constant-sized proof for p(0)
         proofs->setZeroProof(
             std::get<0>(
-                kateProve(Fr::zero())
+                KZG::naiveProve(kpp, f_id, Fr::zero())
             )
         );
     }

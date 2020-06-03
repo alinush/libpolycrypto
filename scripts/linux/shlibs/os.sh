@@ -3,6 +3,9 @@ NUM_CPUS=
 
 if [ "$(uname -s)" = "Darwin" ]; then
     OS="OSX"
+    if sw_vers -productVersion | grep "^10\.15" >/dev/null; then
+        OS_FLAVOR="Catalina"
+    fi
     NUM_CPUS=`sysctl -n hw.ncpu`
 elif [ "$(uname -s)" = "Linux" ]; then
     OS="Linux"

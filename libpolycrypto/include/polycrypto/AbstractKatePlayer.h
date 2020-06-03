@@ -8,6 +8,7 @@
 #include <polycrypto/AbstractPlayer.h>
 #include <polycrypto/KatePublicParameters.h>
 #include <polycrypto/NizkPok.h>
+#include <polycrypto/KZG.h>
 
 #include <xutils/Log.h>
 #include <xutils/Timer.h>
@@ -57,46 +58,6 @@ public:
 
 public:
     virtual void evaluate() {
-    }
-
-    /**
-     * Evaluates f_id(x) at x = point by dividing f_id / (x - point),
-     * returning the quotient in q and the evaluation eval = f_id(point).
-     */
-    void kateEval(const Fr& point, std::vector<Fr>& q, Fr& eval) {
-        // WARNING: Not thread-safe unless we remove 'static'
-        static std::vector<Fr> monom(2), rem(1);
-
-        // set the (x - point) divisor
-        monom[0] = -point;
-        monom[1] = Fr::one();
-
-        // divides f_id by (x - point)
-        libfqfft::_polynomial_division(q, rem, f_id, monom);
-        assertEqual(q.size(), f_id.size() - 1);
-        assertEqual(rem.size(), 1);
-
-        eval = rem[0];
-    }
-
-    /**
-     * Returns the proof for f_id(point) and f_id(point) itself.
-     */
-    std::tuple<G1, Fr> kateProve(const Fr& point) {
-        // WARNING: Not thread-safe unless we remove 'static'
-        static std::vector<Fr> q;
-        static Fr r;
-
-        kateEval(point, q, r);
-
-        // commit to quotient polynomial
-        auto proof = multiExp<G1>(
-            kpp.g1si.begin(),
-            kpp.g1si.begin() + static_cast<long>(q.size()),
-            q.begin(),
-            q.end());
-
-        return std::make_tuple(proof, r);
     }
 
     /**

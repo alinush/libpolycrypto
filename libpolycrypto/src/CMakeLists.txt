@@ -8,6 +8,7 @@ add_library(polycrypto
     FFThresh.cpp
     KateDkg.cpp
     KatePublicParameters.cpp
+    Kzg.cpp
     Lagrange.cpp
     NizkPok.cpp
     PolyOps.cpp

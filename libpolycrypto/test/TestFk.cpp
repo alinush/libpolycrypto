@@ -80,20 +80,8 @@ void testScheme(const std::vector<Dkg::AbstractPlayer*>& players, bool isDkg) {
     logdbg << "Secret: " << secret << endl;
 }
 
-void testFeldman(const Dkg::DkgParams& params, const Dkg::FeldmanPublicParameters& fpp, bool isDkgPlayer) {
-    std::vector<Dkg::AbstractPlayer*> players;
-    bool isSimulated = false;
-
-    for(size_t i = 0; i < params.n; i++) {
-        //logdbg << "Initializing player #" << i+1 << endl;
-        players.push_back(new Dkg::FeldmanPlayer(params, fpp, i, isSimulated, isDkgPlayer));
-    }
-
-    testScheme(players, isDkgPlayer);
-}
-
 template<class PlayerType>
-void testKateBasedSimScheme(const Dkg::DkgParams& params, const Dkg::KatePublicParameters& kpp, bool isDkgPlayer) {
+void testFkSimScheme(const Dkg::DkgParams& params, const Dkg::KatePublicParameters& kpp, bool isDkgPlayer) {
     std::vector<Dkg::AbstractPlayer*> players;
         
     // only VSS dealer is simulated
@@ -115,7 +103,7 @@ void testKateBasedSimScheme(const Dkg::DkgParams& params, const Dkg::KatePublicP
 }
 
 template<class PlayerType>
-void testKateBasedScheme(const Dkg::DkgParams& params, const Dkg::KatePublicParameters& kpp, bool isDkgPlayer, bool shouldSimulate) {
+void testFkScheme(const Dkg::DkgParams& params, const Dkg::KatePublicParameters& kpp, bool isDkgPlayer, bool shouldSimulate) {
     std::vector<Dkg::AbstractPlayer*> players;
 
     for(size_t i = 0; i < params.n; i++) {
@@ -138,48 +126,42 @@ int main(int argc, char *argv[]) {
     srand(static_cast<unsigned int>(time(NULL)));
 
     size_t minT = 2;
-    size_t maxT = 10;
+    size_t maxT = 8;
+    size_t deg = maxT - 1;
 
-    std::unique_ptr<Dkg::KatePublicParameters> kpp(new Dkg::KatePublicParameters(maxT - 1));
+    bool generateParams = argc <= 1;
+
+    std::unique_ptr<KatePublicParameters> kpp;
+    if(generateParams)
+        kpp.reset(new KatePublicParameters(deg));
+    else
+        kpp.reset(new KatePublicParameters(argv[1], deg));
 
     loginfo << "Computing accumulators..." << endl;
     size_t maxN = 2*maxT - 1;
     AccumulatorTree accs(maxN);
     AuthAccumulatorTree authAccs(accs, *kpp, maxT);
 
-    for(size_t t = minT; t <= maxT; t++) {
-        for(size_t n = t+1; n < maxT + 1; n++) {
+    //for(size_t t = minT; t <= maxT; t++) {
+    for(size_t t = minT; t <= maxT; t*=2) {
+        //for(size_t n = t+1; n < maxT + 1; n++) {
+            size_t n = 2*t - 1;
+
             Dkg::DkgParams params(t, n, true);
-            Dkg::FeldmanPublicParameters fpp(params);
             params.setAuthAccumulators(&authAccs);
 
             for(bool isDkg : { true, false }) {
                 loginfo << "Simulating " << t << " out of " << n << " " << (isDkg ? "DKG" : "VSS") << " ..." << endl;
 
-                loginfo << " * Feldman..." << endl;
-                testFeldman(params, fpp, isDkg);
-
-                loginfo << " * Kate..." << endl;
-                testKateBasedScheme<Dkg::KatePlayer>(params, *kpp, isDkg, true);
-
-                loginfo << " * Kate (simulated)..." << endl;
-                testKateBasedSimScheme<Dkg::KatePlayer>(params, *kpp, isDkg);
-
                 loginfo << " * Feist-Khovratovich..." << endl;
-                testKateBasedScheme<Dkg::FkPlayer>(params, *kpp, isDkg, false);
+                testFkScheme<Dkg::FkPlayer>(params, *kpp, isDkg, false);
 
                 loginfo << " * Feist-Khovratovich (simulated)..." << endl;
-                testKateBasedSimScheme<Dkg::FkPlayer>(params, *kpp, isDkg);
-
-                loginfo << " * AMT..." << endl;
-                testKateBasedScheme<Dkg::MultipointPlayer>(params, *kpp, isDkg, false);
-
-                loginfo << " * AMT (simulated)..." << endl;
-                testKateBasedSimScheme<Dkg::MultipointPlayer>(params, *kpp, isDkg);
+                testFkSimScheme<Dkg::FkPlayer>(params, *kpp, isDkg);
 
                 loginfo << endl;
             }
-        }
+        //}
     }
 
     loginfo << "All tests succeeded!" << endl;

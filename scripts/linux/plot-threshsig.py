@@ -39,6 +39,7 @@ if len(data_files) == 0:
 print "Reading CSV files:", data_files, "..."
 
 csv_data = pandas.concat((pandas.read_csv(f) for f in data_files))
+csv_data.sort_values('t', inplace=True) # WARNING: Otherwise, plotting unsorted CSV file be messed up, with incorrect y-values for a x-coordinates
 
 #print "Raw:"
 #print csv_data.to_string()
