@@ -49,6 +49,8 @@ print("min N:", minN)
 print("max N:", maxN)
 print("has logscale:", has_logscale)
 
+csv_data = csv_data[csv_data.n <= maxN]
+
 if 'vss' in csv_data:
     print("VSS .csv file detected!")
     proto_type = 'vss'
@@ -156,7 +158,10 @@ def plotNumbers(data, has_logscale, colNames, legendAppendix, png_name, timeUnit
     else:
         print("Not setting log y-scale")
 
-    ax1.set_xlabel("Threshold t (where n = 2t-1)")
+    if has_logscale:
+        ax1.set_xlabel("Log2 of threshold t (n = 2t-1)")
+    else:
+        ax1.set_xlabel("Threshold t (n = 2t-1)")
     ax1.set_ylabel("Time (in " + timeUnit + ")")   #, fontsize=fontsize)
     ax1.grid(True)
 

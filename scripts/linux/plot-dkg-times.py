@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 from cycler import cycler
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ import numpy as np
 setTitle=False
 
 if len(sys.argv) < 5:
-    print "Usage:", sys.argv[0], "<output-file-prefix> <min-N> <max-N> <csv-file> [<csv-file>] ..."
+    print("Usage:", sys.argv[0], "<output-file-prefix> <min-N> <max-N> <csv-file> [<csv-file>] ...")
     sys.exit(0)
 
 del sys.argv[0]
@@ -27,7 +27,7 @@ del sys.argv[0]
 
 data_files = [f for f in sys.argv]
 
-print "Reading CSV files:", data_files, "..."
+print("Reading CSV files:", data_files, "...")
 
 csv_data = pandas.concat((pandas.read_csv(f) for f in data_files))
 
@@ -43,8 +43,8 @@ if minN == 0:
 if maxN == 0:
     maxN = csv_data.n.unique().max();
 
-print "min N:", minN
-print "max N:", maxN
+print("min N:", minN)
+print("max N:", maxN)
 
 #csv_data = csv_data[csv_data.dkg != 'Feldman']
 csv_data.dkg.replace('feld', 'JF-DKG', inplace=True)
@@ -70,7 +70,7 @@ csv_data.avg_reconstr_wc_usec /= 1000*1000
 csv_data.end_to_end_bc_usec /= 1000*1000
 csv_data.end_to_end_wc_usec /= 1000*1000
 
-print csv_data[['t','n','dkg','avg_deal_hum','avg_verify_bc_hum', 'avg_verify_wc_hum', 'avg_reconstr_bc_hum', 'avg_reconstr_wc_hum']].to_string()  # print all data
+print(csv_data[['t','n','dkg','avg_deal_hum','avg_verify_bc_hum', 'avg_verify_wc_hum', 'avg_reconstr_bc_hum', 'avg_reconstr_wc_hum']].to_string())  # print all data
 
 #SMALL_SIZE = 10
 MEDIUM_SIZE = 20
@@ -128,16 +128,16 @@ def plotNumbers(data, bestCaseColName, worstCaseColName, title, fileSuffix):
 
     #plt.xticks(x, x, rotation=30)
     dkgs = data.dkg.unique()
-    print
-    print "X:", x
-    print "len(x):", len(x)
+    print()
+    print("X:", x)
+    print("len(x):", len(x))
         
     plots = []
     names = []
 
     for dkg in dkgs:
         for colName in cols: 
-            print "Plotting", dkg
+            print("Plotting", dkg)
             filtered = data[data.dkg == dkg]
             usec_col = filtered[colName].values
 
@@ -151,7 +151,7 @@ def plotNumbers(data, bestCaseColName, worstCaseColName, title, fileSuffix):
             plots.append(plt1)
             names.append(str(dkg) + legend[colName])
         
-            print "Y:", usec_col
+            print("Y:", usec_col)
 
     #plt.xticks(x, x, rotation=30)
 
@@ -171,7 +171,7 @@ def plotNumbers(data, bestCaseColName, worstCaseColName, title, fileSuffix):
     plt.tight_layout()
 
     out_file = out_png_file + fileSuffix + ".png"
-    print "Saving graph to", out_file
+    print("Saving graph to", out_file)
 
     #date = time.strftime("%Y-%m-%d-%H-%M-%S")
     plt.savefig(out_file, bbox_inches='tight')
@@ -208,9 +208,9 @@ def plotReconstr(data, bestCaseColName, worstCaseColName, title, fileSuffix):
     #ax1.set_ylabel("Time (in seconds)")   #, fontsize=fontsize)
 
     #plt.xticks(x, x, rotation=30)
-    print
-    print "X:", x
-    print "len(x):", len(x)
+    print()
+    print("X:", x)
+    print("len(x):", len(x))
         
     dkgs = data.dkg.unique()
     plots = []
@@ -218,7 +218,7 @@ def plotReconstr(data, bestCaseColName, worstCaseColName, title, fileSuffix):
 
     for colName in [ worstCaseColName ]:
         for dkg in dkgs:
-            print "Plotting", dkg
+            print("Plotting", dkg)
             filtered = data[data.dkg == dkg]
             usec_col = filtered[colName].values
 
@@ -232,11 +232,11 @@ def plotReconstr(data, bestCaseColName, worstCaseColName, title, fileSuffix):
             plots.append(plt1)
             names.append(str(dkg) + legend[colName])
         
-            print "Y:", usec_col
+            print("Y:", usec_col)
     
     dkg = dkgs[0]
     colName = bestCaseColName
-    print "Plotting", dkg
+    print("Plotting", dkg)
     filtered = data[data.dkg == dkg]
     usec_col = filtered[colName].values
 
@@ -245,7 +245,7 @@ def plotReconstr(data, bestCaseColName, worstCaseColName, title, fileSuffix):
     plots.append(plt1)
     names.append("eJF & AMT DKG" + legend[colName])
 
-    print "Y:", usec_col
+    print("Y:", usec_col)
 
     #plt.xticks(x, x, rotation=30)
 
@@ -265,7 +265,7 @@ def plotReconstr(data, bestCaseColName, worstCaseColName, title, fileSuffix):
     plt.tight_layout()
 
     out_file = out_png_file + fileSuffix + ".png"
-    print "Saving graph to", out_file
+    print("Saving graph to", out_file)
 
     #date = time.strftime("%Y-%m-%d-%H-%M-%S")
     plt.savefig(out_file, bbox_inches='tight')

@@ -1,4 +1,4 @@
-k,n,interpolation_method,num_samples,lagr_usec,multiexp_usec,total_usec,lagr_hum,multiexp_hum,total_hum
+t,n,interpolation_method,num_samples,lagr_usec,multiexp_usec,total_usec,lagr_hum,multiexp_hum,total_hum
 2,3,fft-eval,100,23,298,321,23.00 mus,298.00 mus,321.00 mus
 4,7,fft-eval,100,40,645,685,40.00 mus,645.00 mus,685.00 mus
 8,15,fft-eval,100,75,707,782,75.00 mus,707.00 mus,782.00 mus

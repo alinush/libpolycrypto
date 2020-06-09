@@ -1,4 +1,4 @@
-k,n,interpolation_method,num_samples,lagr_usec,multiexp_usec,total_usec,lagr_hum,multiexp_hum,total_hum
+t,n,interpolation_method,num_samples,lagr_usec,multiexp_usec,total_usec,lagr_hum,multiexp_hum,total_hum
 2,3,naive-lagr-wnk,100,11,303,314,11.00 mus,303.00 mus,314.00 mus
 4,7,naive-lagr-wnk,100,16,649,665,16.00 mus,649.00 mus,665.00 mus
 8,15,naive-lagr-wnk,100,33,731,764,33.00 mus,731.00 mus,764.00 mus

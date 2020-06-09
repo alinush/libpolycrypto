@@ -164,7 +164,10 @@ def plotNumbers(data, has_logscale, colNames, legendAppendix, png_name):
         ax1.set_xscale("log", basex=logBase)
     #ax1.set_yscale("log")
 
-    ax1.set_xlabel("Threshold t (n = 2t-1)")
+    if has_logscale:
+        ax1.set_xlabel("Log2 of threshold t (n = 2t-1)")
+    else:
+        ax1.set_xlabel("Threshold t (n = 2t-1)")
     ax1.set_ylabel("Speed up over AMT " + suffix)   #, fontsize=fontsize)
     ax1.grid(True)
 

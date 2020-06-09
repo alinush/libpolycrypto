@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 import matplotlib
 matplotlib.use('Agg') # otherwise script does not work when invoked over SSH
@@ -13,7 +13,7 @@ import numpy as np
 setTitle=False
 
 if len(sys.argv) < 5:
-    print "Usage:", sys.argv[0], "<output-png-file> <dkgs-allowed> <min-N> <max-N> <csv-file> [<csv-file>] ..."
+    print("Usage:", sys.argv[0], "<output-png-file> <dkgs-allowed> <min-N> <max-N> <csv-file> [<csv-file>] ...")
     sys.exit(0)
 
 del sys.argv[0]
@@ -31,12 +31,12 @@ maxN = int(sys.argv[0])
 del sys.argv[0]
 
 if not out_png_file.endswith('.png'):
-    print "ERROR: Expected .png file as first argument"
+    print("ERROR: Expected .png file as first argument")
     sys.exit(1)
 
 data_files = [f for f in sys.argv]
 
-print "Reading CSV files:", data_files, "..."
+print("Reading CSV files:", data_files, "...")
 
 csv_data = pandas.concat((pandas.read_csv(f) for f in data_files))
 csv_data.sort_values('t', inplace=True) # WARNING: Otherwise, plotting unsorted CSV file be messed up, with incorrect y-values for a x-coordinates
@@ -53,8 +53,8 @@ if minN == 0:
 if maxN == 0:
     maxN = csv_data.n.unique().max();
 
-print "min N:", minN
-print "max N:", maxN
+print("min N:", minN)
+print("max N:", maxN)
 
 # we specify the DKGs here in a specific order so they are plotted with the right colors
 dkgs = [ "eJF-DKG", "AMT DKG", "JF-DKG" ]
@@ -69,7 +69,7 @@ csv_data = csv_data[csv_data.n <= maxN]
 csv_data.download_bw_bytes /= 1024*1024    # bytes to MB
 csv_data.upload_bw_bytes /= 1024*1024    # bytes to MB
 
-print csv_data.to_string()  # print all data
+print(csv_data.to_string())  # print all data
 
 #SMALL_SIZE = 10
 MEDIUM_SIZE = 20
@@ -94,8 +94,8 @@ plt.rcParams['axes.prop_cycle'] = cycler(color=[
     '#ff7f0e', # orange
     ])
 
-print "DKGs in file:", csv_data.dkg.unique()
-print "DKGs known:  ", dkgs
+print("DKGs in file:", csv_data.dkg.unique())
+print("DKGs known:  ", dkgs)
 
 def plotNumbers(data):
     x = data.n.unique()    #.unique() # x-axis is the number of total players n
@@ -103,7 +103,7 @@ def plotNumbers(data):
     #logBase = 10
     logBase = 2
     
-    print "Plotting with log base", logBase 
+    print("Plotting with log base", logBase) 
 
     # adjust the size of the plot: (20, 10) is bigger than (10, 5) in the
     # sense that fonts will look smaller on (20, 10)
@@ -122,7 +122,7 @@ def plotNumbers(data):
     #plt.xticks(x, x, rotation=30)
     for dkg in dkgs:
         if dkg not in dkgs_allowed:
-            print "Skipping over disallowed:", dkg
+            print("Skipping over disallowed:", dkg)
             continue
 
         filtered = data[data.dkg == dkg]

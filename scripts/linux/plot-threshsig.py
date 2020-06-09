@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as plticker
@@ -11,9 +11,9 @@ import numpy as np
 setTitle=False
 
 if len(sys.argv) < 5:
-    print "Usage:", sys.argv[0], "<output-png-file> <min-N> <max-N> <is-paper-plot> <csv-file> [<csv-file>] ..."
-    print
-    print "<is-paper-plot> should be 1 if you want lines for 'multiexp, lagr, lagr+multiexp' and 0 if you just want 'lagr+multiexp'"
+    print("Usage:", sys.argv[0], "<output-png-file> <min-N> <max-N> <is-paper-plot> <csv-file> [<csv-file>] ...")
+    print()
+    print("<is-paper-plot> should be 1 if you want lines for 'multiexp, lagr, lagr+multiexp' and 0 if you just want 'lagr+multiexp'")
     sys.exit(0)
 
 del sys.argv[0]
@@ -29,14 +29,14 @@ del sys.argv[0]
 
 is_paper_plot = (sys.argv[0].strip() == '1')
 del sys.argv[0]
-print "Is paper plot:", is_paper_plot
+print("Is paper plot:", is_paper_plot)
 
 data_files = [f for f in sys.argv]
 if len(data_files) == 0:
-    print "ERROR: You did not give me any CSV files"
+    print("ERROR: You did not give me any CSV files")
     sys.exit(1)
 
-print "Reading CSV files:", data_files, "..."
+print("Reading CSV files:", data_files, "...")
 
 csv_data = pandas.concat((pandas.read_csv(f) for f in data_files))
 csv_data.sort_values('t', inplace=True) # WARNING: Otherwise, plotting unsorted CSV file be messed up, with incorrect y-values for a x-coordinates
@@ -53,8 +53,8 @@ if minN == 0:
 if maxN == 0:
     maxN = csv_data.n.unique().max();
 
-print "min N:", minN
-print "max N:", maxN
+print("min N:", minN)
+print("max N:", maxN)
 
 csv_data.interpolation_method.replace('multi-eval-1-to-n', 'Old Fast Lagrange', inplace=True)
 csv_data.interpolation_method.replace('naive-lagr-1-to-n', 'Old Naive Lagrange', inplace=True)
@@ -70,7 +70,7 @@ else:
 csv_data = csv_data[csv_data.n >= minN]
 csv_data = csv_data[csv_data.n <= maxN]
 
-print csv_data.to_string()  # print all data
+print(csv_data.to_string())  # print all data
 
 # recompute total, just to be safe
 csv_data.total_usec = csv_data.lagr_usec + csv_data.multiexp_usec
@@ -112,7 +112,7 @@ if is_paper_plot:
         '#2ca02c', # green
         ])
 else:
-    print "Redoing colors"
+    print("Redoing colors")
     plt.rcParams['axes.prop_cycle'] = cycler(color=[
         # for naive Lagrange lines
         '#1f77b4', # blue
@@ -150,7 +150,7 @@ def plotNumbers(data):
 
     # plot multiexp
     marker = 'o'
-    x = data.k.unique()    #.unique() # x-axis is the number of players aggregating
+    x = data.t.unique()    #.unique() # x-axis is the number of players aggregating
     ax1.set_xticks(x)
 
     ax1.set_xticklabels(np.log2(x).astype(int), rotation=30)
@@ -165,21 +165,21 @@ def plotNumbers(data):
 
         methods = data.interpolation_method.unique()
         if "Fast Lagrange" in methods:
-            print "Using Multiexp numbers from Fast Lagrange benchmarks because we took more samples there..."
+            print("Using Multiexp numbers from Fast Lagrange benchmarks because we took more samples there...")
             filtered = data[data.interpolation_method == "Fast Lagrange"];  # because we took more samples when we measured multiexp
         else:
-            print "No 'Fast Lagrange' multiexp numbers. Using numbers from", methods[0]
+            print("No 'Fast Lagrange' multiexp numbers. Using numbers from", methods[0])
             filtered = data[data.interpolation_method == methods[0]]
 
     # plot Lagr and total times for each scheme
     types = data.interpolation_method.unique()
     for lagrType in types:
-        print "Plotting Lagrange type: ", lagrType 
+        print("Plotting Lagrange type: ", lagrType) 
 
         filtered = data[data.interpolation_method == lagrType]
         # NOTE: In case, we don't have enough numbers for one of the schemes
-        x = filtered.k.unique()    #.unique() # x-axis is the number of players aggregating
-        print "n = ", x
+        x = filtered.t.unique()    #.unique() # x-axis is the number of players aggregating
+        print("n = ", x)
 
         col1 = filtered.total_usec.values
 
@@ -205,7 +205,7 @@ def plotNumbers(data):
     plt.tight_layout()
 
     out_file = out_png_file
-    print "Saving graph to", out_file
+    print("Saving graph to", out_file)
 
     #date = time.strftime("%Y-%m-%d-%H-%M-%S")
     plt.savefig(out_file, bbox_inches='tight')

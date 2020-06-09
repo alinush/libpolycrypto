@@ -23,7 +23,7 @@ $plot_cmd \
 (
 cd $scriptdir;
 $plot_cmd \
-    "small-scale" 2 1024 $hasLogscale \
+    "-small-scale" 2 1024 $hasLogscale \
     kate.csv \
     amt.csv \
     fk.csv \
