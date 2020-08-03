@@ -11,3 +11,4 @@ doxygen/
 /Testing
 core
 *.png
+.DS_Store
