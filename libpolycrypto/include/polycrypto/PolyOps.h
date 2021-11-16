@@ -184,11 +184,12 @@ void poly_differentiate(const vector<FieldT> &f, vector<FieldT> &d) {
  * O(n^2) naive polynomial multiplication
  */
 template<typename FieldT>
-void polynomial_multiplication_naive(vector<FieldT> &c, const vector<FieldT> &b, const vector<FieldT> &a) {
-    c.resize(a.size() + b.size() - 1, 0);
+std::vector<FieldT> polynomial_multiplication_naive(const vector<FieldT> &b, const vector<FieldT> &a) {
+    std::vector<FieldT> c(a.size() + b.size() - 1, FieldT::zero());
     for (size_t i = 0; i < a.size(); i++)
         for (size_t j = 0; j < b.size(); j++)
             c[i+j] += a[i] * b[j];
+    return c;
 }
 
 /**

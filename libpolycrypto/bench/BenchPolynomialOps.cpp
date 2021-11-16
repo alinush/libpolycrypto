@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
             if(i <= 4096) {
                 c2.startLap();
-                polynomial_multiplication_naive(p2, a, b);
+                p2 = polynomial_multiplication_naive(a, b);
                 c2.endLap();
             }
 

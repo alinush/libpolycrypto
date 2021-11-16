@@ -10,7 +10,7 @@
 #include <polycrypto/RootsOfUnityEval.h>
 
 #include <libff/common/profiling.hpp>
-#include <libff/algebra/fields/field_utils.hpp> // get_root_of_unity
+#include <libff/algebra/field_utils/field_utils.hpp> // get_root_of_unity
 
 #ifdef USE_MULTITHREADING
 # include <omp.h>

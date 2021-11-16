@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include <libfqfft/evaluation_domain/domains/basic_radix2_domain.hpp>
-#include <libff/algebra/fields/field_utils.hpp>
+#include <libff/algebra/field_utils/field_utils.hpp>
 
 using libpolycrypto::FFT;
 using libpolycrypto::invFFT;

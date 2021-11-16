@@ -26,7 +26,10 @@ target_link_libraries(polycrypto PUBLIC
 
 include(FindOpenMP)
 if(OPENMP_FOUND)
-    target_link_libraries(polycrypto PUBLIC gomp)
+    # Out of nowhere, this started failing on OS X, so I disabled it since we don't use it anyway
+    if(NOT APPLE)
+        target_link_libraries(polycrypto PUBLIC gomp)
+    endif()
 endif()
 
 #target_link_libraries(polycrypto PUBLIC Threads::Threads)

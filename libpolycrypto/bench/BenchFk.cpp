@@ -20,8 +20,6 @@
 #include <xutils/NotImplementedException.h>
 #include <xutils/Timer.h>
 
-#include <libff/algebra/fields/field_utils.hpp>
-
 using namespace std;
 using namespace libfqfft;
 using namespace libpolycrypto;
