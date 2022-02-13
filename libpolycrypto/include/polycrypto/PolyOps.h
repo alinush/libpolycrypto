@@ -193,7 +193,7 @@ std::vector<FieldT> polynomial_multiplication_naive(const vector<FieldT> &b, con
 }
 
 /**
- * Returns true if the polynomial is of the type X^m - c, where m != 0
+ * Returns true if the polynomial is of the type X^m + c, where m != 0
  */
 template<class FieldT>
 bool poly_is_xnc(const vector<FieldT>& p) {
@@ -212,7 +212,7 @@ bool poly_is_xnc(const vector<FieldT>& p) {
 }
 
 /**
- * Divides a(X) (of degree n) by b(X) of (degree m), where b(X) is of the form X^m - c.
+ * Divides a(X) (of degree n) by b(X) of (degree m), where b(X) is of the form X^m + c.
  *
  * Returns the quotient in q and the remainder in r.
  */
