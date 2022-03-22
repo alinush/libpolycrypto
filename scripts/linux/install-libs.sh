@@ -76,6 +76,14 @@ cd $sourcedir/depends
 echo "Installing ate-pairing..."
 (
     cd ate-pairing/
+
+    if [ "$OS" = "OSX" -a "$OS_FLAVOR" = "Monterey" ]; then
+        echo "Setting proper env. vars for compiling against libgmp in OS X Monterey"
+        #export PKG_CONFIG_PATH="/opt/homebrew/Cellar/gmp/6.2.1_1/lib/pkgconfig"
+        export LIB_DIR=" -L/opt/homebrew/Cellar/gmp/6.2.1_1/lib"
+        export INC_DIR="-I/opt/homebrew/Cellar/gmp/6.2.1_1/include"
+    fi
+
     if [ $CLEAN_BUILD -eq 1 ]; then
         echo "Cleaning previous build..."
         echo
