@@ -7,7 +7,7 @@ import sys
 import time
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
-from matplotlib.dates import MonthLocator, DateFormatter, DayLocator, epoch2num, num2date
+from matplotlib.dates import MonthLocator, DateFormatter, DayLocator, num2date
 
 def print_usage(cmd_name):
     print("Usage:", cmd_name, "<csv-file> [<col_usec>] [<col_hum>]")
@@ -78,7 +78,7 @@ print(csv_data.to_string());
 if usec_col is not None:
     for idx, r in csv_data.iterrows():
         if r[usec_col] != 'todo' and str(r[usec_col]) != 'nan':
-            csv_data.ix[idx, hum_col] = humanizeMicroseconds(int(r[usec_col]))
+            csv_data.loc[idx, hum_col] = humanizeMicroseconds(int(r[usec_col]))
 
 else:
     for c_usec in cols:
@@ -89,7 +89,7 @@ else:
 
             for idx, r in csv_data.iterrows():
                 if r[c_usec] != 'todo' and str(r[c_usec]) != 'nan':
-                    csv_data.ix[idx, c_hum] = humanizeMicroseconds(int(r[c_usec]))
+                    csv_data.loc[idx, c_hum] = humanizeMicroseconds(int(r[c_usec]))
 
 print(csv_data.to_string());
 
